@@ -4,7 +4,7 @@ Note to install CartoDB on Centos 7.x (Core)
 
 
 ######Start with the Centos 7.x Core
-From the first step use `sudo su` to change to root and `yum update` to upgrade your CentOS system software to the latest version.
+From the first step use `sudo su` to change to root and `yum -y update` to upgrade your CentOS system software to the latest version.
 
 ######System locales
 Installations assume you use UTF8. You can set the locale by doing this:
@@ -18,29 +18,49 @@ locale list-keymaps # list keyboard mappings
 ######Install Develpment Tools
 If Development Tools are not installed in your system by default, you can install the latest available from the repositories as follows:
 ```
-yum groups install "Development Tool"
+yum -y groups install "Development Tool"
 ```
 
 ######Install Git
 ```
-yum install git
+yum -y install git
 ```
 
 ######Install Python and pip
 ```
-yum install python python-devel
+yum -y install python python-devel
 easy_install pip
 ```
 
 ######Install PostgreSQL
-Import RPM Repository
+Add the PostgreSQL 9.3 Repository
 ```
-rpm -ivh http://yum.postgresql.org/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-1.noarch.rpm
+rpm -iUvh http://yum.postgresql.org/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-1.noarch.rpm
 ```
+Install PostgreSQL
+```
+yum -y update 
+yum -y install postgresql93 postgresql93-server postgresql93-contrib postgresql93-libs postgresql93-python
+```
+Start PostgreSQL
+```
+systemctl enable postgresql-9.3
+/usr/pgsql-9.3/bin/postgresql93-setup initdb
+systemctl start postgresql-9.3
+```
+Locate the `pg_hba.conf` an set this with no password access from localhost  
 
+ TYPE  DATABASE        USER            ADDRESS                 METHOD  
+ "local" is for Unix domain socket connections only  
+local   all             all                                     trust  
+ IPv4 local connections:  
+host    all             all             127.0.0.1/32            trust  
+ IPv6 local connections:  
+host    all             all             ::1/128                 ident  
+
+For these changes to take effect, you'need to restart postgres:
 ```
-yum update
-yum list postgre93*
+systemctl restart postgresql-9.3
 ```
 
 **Coming Soon**

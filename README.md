@@ -277,6 +277,7 @@ node app.js <environment>
 Supported values are development, test, staging, production
 
 * 1 failing (multilayer unknown text-face-name)
+This error indicates that you are using a text-face-name value in your stylesheet that references a font that does not exist on your file system or is mis-spelled.
 
 ___
 **Incomplete Manual**.  

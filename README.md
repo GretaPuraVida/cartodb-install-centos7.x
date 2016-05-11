@@ -78,7 +78,7 @@ It recommend using the `-–match` parameter to make sure you get the tag you ex
 ```
 git describe  --match="v*" 
 git checkout <latest cartodb-postgresql tag>
-export PATH=/usr/pgsql-9.3/bin:$PATH
+export PATH=$PATH:/usr/pgsql-9.3/bin/
 make all install
 ```
 ######Install GIS dependencies
@@ -104,7 +104,7 @@ Install XML Library
 ```
 yum -y install libxml2 libxml2-devel
 ```
-Install PostGIS
+Install PostGIS extension
 ```
 yum -y install postgis2_93 postgis2_93-client postgis2_93-devel postgis2_93-utils
 ```
@@ -114,7 +114,7 @@ Initialize template postgis database. We create a template database in postgresq
 createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis
 createlang plpgsql -U postgres -d template_postgis
 psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
-ldconfig
+
 ```
 Run an installcheck to verify the database has been installed properly
 ```
@@ -125,6 +125,159 @@ Restart PostgreSQL after all this process
 systemctl start postgresql-9.3.service
 ```
 
+######Install Redis
+Redis 3+ is needed. The version contained in the EPEL repository is `2.8.19-2`. We proceed by installing redis 3.x from stable source package.  
+
+Download Redis 3.x stable source package
+
+``` 
+yum -y install wget
+wget http://download.redis.io/releases/redis-3.2.0.tar.gz
+```
+Untar downloaded Redis Tar ball
+
+``` 
+tar -xvzf redis-3.2.0.tar.gz
+```
+Compiling of Redis from source
+
+``` 
+cd redis-3.2.0/deps/
+make hiredis lua jemalloc linenoise
+cd .. && cd src
+make
+make install
+```
+Testing Redis source installation
+```
+yum -y install tcl
+make test
+```
+Install init script
+```
+cd .. && cd utils
+./install_server.sh
+
+Welcome to the redis service installer
+This script will help you easily set up a running redis server
+
+Please select the redis port for this instance: [6379] 
+Selecting default: 6379
+Please select the redis config file name [/etc/redis/6379.conf] 
+Selected default - /etc/redis/6379.conf
+Please select the redis log file name [/var/log/redis_6379.log] 
+Selected default - /var/log/redis_6379.log
+Please select the data directory for this instance [/var/lib/redis/6379] 
+Selected default - /var/lib/redis/6379
+Please select the redis executable path [/usr/local/bin/redis-server] 
+Selected config:
+Port           : 6379
+Config file    : /etc/redis/6379.conf
+Log file       : /var/log/redis_6379.log
+Data dir       : /var/lib/redis/6379
+Executable     : /usr/local/bin/redis-server
+Cli Executable : /usr/local/bin/redis-cli
+Is this ok? Then press ENTER to go on or Ctrl-C to abort.
+Copied /tmp/6379.conf => /etc/init.d/redis_6379
+Installing service...
+Successfully added to chkconfig!
+Successfully added to runlevels 345!
+Starting Redis server...
+Installation successful!
+```
+Setting Redis persistence
+Edit Redis Config file `/etc/redis/6379.conf`. Look for the following line `appendonly no` and change it to `appendonly yes`. You have just enabled Redis’ AOF (Append Only File) persistence. You are ready to go. For more information check [redis.io/topics/persistenc](http://redis.io/topics/persistenc)
+
+Redis start/stop/restart/status
+```
+#To check status of Redis Server
+systemctl status redis_6379.service
+
+# To start Redis Server
+systemctl start redis_6379.service
+
+# To stop Redis Server
+systemctl stop redis_6379.service
+
+# To restart the Redis Server
+systemctl restart redis_6379.service
+```
+
+######Install NodeJS 
+```
+yum -y install nodejs npm
+```
+
+You can verify the installation went as expected with `node -v` and `npm -v`.  
+If you need to update npm use `npm install npm -g` and global dependencies use `npm update -g`.  
+
+
+######Install SQL API
+Download API
+```
+git clone https://github.com/CartoDB/CartoDB-SQL-API.git
+cd CartoDB-SQL-API
+git checkout master
+```
+Install NPM dependencies
+```
+npm install
+```
+Test SQL API
+Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let’s assume it’s development. You may find the `./configure` script useful to make an edited copy for you.
+```
+PGUSER=postgres make check
+```
+Start SQL API
+
+Start the service. The second parameter is always the environment if the service. Remember to use the same you used in the configuration.
+```
+node app.js <environment>
+```
+Supported values are development, test, staging, production
+
+######Install MAPS API
+Download API
+```
+git clone https://github.com/CartoDB/Windshaft-cartodb.git
+cd Windshaft-cartodb
+git checkout master
+```
+######Install Cairo
+```
+yum -y install cairo cairo-devel
+```
+######Install JPEG Library
+```
+yum -y install libjpeg-turbo*
+```
+######Install GIF Library
+```
+yum -y install giflib*
+```
+######Install TIFF Library
+```
+yum -y install libtiff*
+```
+Install NPM dependencies
+```
+npm install
+```
+Test SQL API
+Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let’s assume it’s development. You may find the `./configure` script useful to make an edited copy for you.
+```
+PGUSER=postgres make check
+```
+Start SQL API
+
+Start the service. The second parameter is always the environment if the service. Remember to use the same you used in the configuration.
+```
+node app.js <environment>
+```
+Supported values are development, test, staging, production
+
+* 1 failing (multilayer unknown text-face-name)
+
 ___
-**Coming Soon**
+**Incomplete Manual**.  
 Refered to [CartoDB Docs](http://cartodb.readthedocs.io/en/latest)

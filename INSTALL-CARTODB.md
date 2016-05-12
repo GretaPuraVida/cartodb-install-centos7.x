@@ -1,4 +1,4 @@
-
+# Note to install CartoDB on Centos 7.x
 
 
 ######Start with the Centos 7.x Core
@@ -276,3 +276,35 @@ Supported values are development, test, staging, production
 
 * 1 failing (multilayer unknown text-face-name)
 This error indicates that you are using a text-face-name value in your stylesheet that references a font that does not exist on your file system or is mis-spelled.
+
+######Install Ruby47
+Install Required Packages
+```
+yum -y install readline-devel libyaml-devel libffi-devel sqlite-devel
+```
+
+Install Ruby Version Manager (RVM) 
+```
+curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+curl -L get.rvm.io | bash -s stable
+source /etc/profile.d/rvm.sh
+rvm reload
+```
+Verify Dependencies
+```
+rvm requirements run 
+```
+Install Ruby 2.2 
+```
+rvm install 2.2.3
+```
+Setup Default Ruby Version and Check Current Ruby Version
+```
+rvm use 2.2.3 --default
+ruby -v
+```
+Install Ruby Gems
+```
+gem install bundler
+gem install compass
+```

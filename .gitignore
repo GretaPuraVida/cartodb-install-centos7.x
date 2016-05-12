@@ -1,0 +1,7 @@
+### cartodb-install-centos7.x .gitignore
+
+# IntelliJ project files
+.idea
+out
+gen
+

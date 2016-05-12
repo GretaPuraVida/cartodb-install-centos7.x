@@ -308,3 +308,16 @@ Install Ruby Gems
 gem install bundler
 gem install compass
 ```
+
+######Install Editor
+Download Editor
+```
+git clone --recursive https://github.com/CartoDB/cartodb.git
+cd cartodb
+```
+
+Install dependencies
+```
+yum -y install ImageMagic
+RAILS_ENV=development bundle install
+```

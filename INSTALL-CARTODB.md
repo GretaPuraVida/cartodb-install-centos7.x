@@ -318,6 +318,68 @@ cd cartodb
 
 Install dependencies
 ```
-yum -y install ImageMagic
+yum -y install ImageMagic libicu libicu-devel
+
 RAILS_ENV=development bundle install
+npm install
+pip install --no-use-wheel -r python_requirements.txt
 ```
+
+If this fails due to the installation of the gdal package not finding Python.h, you’ll need to do this:
+```
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+export PATH=$PATH:/usr/include/gdal
+```
+After this, re-run the pip install command, and it should work.
+
+Add the grunt command to the PATH
+```
+export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
+```
+
+Install all necesary gems
+```
+bundle install
+```
+
+Precompile assets. Note that the last parameter is the environment used to run the application. It must be the same used in the Maps and SQL APIs  
+```
+bundle exec grunt --environment development
+```
+Create Configuration File
+``` 
+cp config/app_config.yml.sample config/app_config.yml
+cp config/database.yml.sample config/database.yml
+```
+######First running, setting up user
+```
+cd cartodb
+export SUBDOMAIN=development
+
+# Add entries to /etc/hosts needed in development
+echo "127.0.0.1 ${SUBDOMAIN}.localhost.lan" | sudo tee -a /etc/hosts
+
+# Create a development user
+sh script/create_dev_user ${SUBDOMAIN}
+```
+
+
+######Running all the processes
+
+Start the resque daemon (needed for import jobs):
+```
+bundle exec script/resque
+```
+Finally, start the CartoDB development server on port 3000:
+```
+bundle exec thin start --threaded -p 3000 --threadpool-size 5
+```
+Node apps
+```
+cd cartodb-sql-api && node app.js
+cd windshaft-cartodb && node app.js
+```
+You should now be able to access `http://<mysubdomain>.localhost.lan:3000` in your browser and login with the password specified above.
+
+Enjoy

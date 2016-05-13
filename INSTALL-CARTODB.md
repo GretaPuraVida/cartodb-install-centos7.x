@@ -112,7 +112,6 @@ Initialize template postgis database. We create a template database in postgresq
 createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis
 createlang plpgsql -U postgres -d template_postgis
 psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
-
 ```
 Run an installcheck to verify the database has been installed properly
 ```
@@ -277,7 +276,7 @@ Supported values are development, test, staging, production
 * 1 failing (multilayer unknown text-face-name)
 This error indicates that you are using a text-face-name value in your stylesheet that references a font that does not exist on your file system or is mis-spelled.
 
-######Install Ruby47
+######Install Ruby
 Install Required Packages
 ```
 yum -y install readline-devel libyaml-devel libffi-devel sqlite-devel
